@@ -2,19 +2,10 @@ import socket
 import struct
 import sys
 import traceback
-from jdwp_constants import *
-from jdwp_util import *
 
 class jdwp:
 
 	def __init__(self, port = 5005):
-
-		self.spec = parse_jdwp_spec(
-				"/home/cgs/code/debug/tmp/spec",
-				lambda x, y, z : self.command_set_handler(x, y, z),
-				lambda x, y, z : self.constant_set_handler(x, y, z))
-
-		exit(1)
 
 		self.establish_connection(port)
 
@@ -26,24 +17,20 @@ class jdwp:
 		# request ids are simply created sequentially starting with 0
 		self.next_req_id = 0
 		
-		self.version_info = self.get_reply(self.vm_version())
-		self.id_size_info = self.get_reply(self.vm_id_sizes())
+		self.vm_version = self.func_creator("VersionRequest", 1, 1, "", True)
+
+		print(self.vm_version(self, ()))
+
 
 	def establish_connection(self, port):
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.connect(('localhost', port))
 
 		# handshake
-		self.sock.send(bytes('JDWP-Handshake', 'UTF-8'))
+		self.sock.send(b'JDWP-Handshake')
 		data = self.sock.recv(14)
 		if data != b'JDWP-Handshake':
 			raise Exception('Failed handshake')
-
-	def command_set_handler(self, text, bytepos, parsetree):
-		print(parsetree)
-
-	def constant_set_handler(self, text, bytepos, parsetree):
-		1#print(parsetree[0])
 
 	def func_creator(self, name, cmdset, cmd, packing_str, sync=False):
 		if sync:
@@ -96,6 +83,15 @@ class jdwp:
 		data = read_all(self.sock, remaining)
 		print("RECV header = %s, data = %s" % (struct.unpack('>IIBH', header), data))
 		return req_id, flags, err, data
+
+	def read_all(sock, num_bytes):
+		msgparts = []
+		remaining = num_bytes
+		while remaining > 0:
+			chunk = sock.recv(remaining)
+			msgparts.append(chunk)
+			remaining -= len(chunk)
+		return b''.join(msgparts)
 
 	def next_id(self):
 		self.next_req_id += 1

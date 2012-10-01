@@ -1,0 +1,241 @@
+(CommandSet VirtualMachine=1
+    (Command Version=1 
+        "Returns the JDWP version implemented by the target VM. "
+	"The version string format is implementation dependent. "
+	(Out 
+        )
+        (Reply 
+	    (string description "Text information on the VM version")
+	    (int    jdwpMajor   "Major JDWP Version number")
+	    (int    jdwpMinor   "Minor JDWP Version number")
+	    (string vmVersion   "Target VM JRE version, as in the java.version property")
+	    (string vmName      "Target VM name, as in the java.vm.name property")
+        )
+        (ErrorSet
+            (Error VM_DEAD)   
+        )
+    )
+    (Command ClassesBySignature=2
+        "Returns reference types for all the classes loaded by the target VM..."
+	(Out
+	    (string signature "JNI signature of the class to find "
+	                      "(for example, \"Ljava/lang/String;\"). "
+            )
+        )
+        (Reply 
+            (Repeat classes "Number of reference types that follow." 
+                (Group ClassInfo
+                    (byte refTypeTag  "<a href=\"#JDWP_TypeTag\">Kind</a> "
+		                      "of following reference type. ")
+                    (referenceTypeID typeID "Matching loaded reference type")
+                    (int status "The current class "
+		                "<a href=\"#JDWP_ClassStatus\">status.</a> ")
+                )
+            )
+        )
+        (ErrorSet
+            (Error VM_DEAD)
+        )
+    )
+)
+(CommandSet EventRequest=15
+    (Command Set=1
+        "Set an event request. When the event described by this request..."
+        (Out
+            (byte eventKind "Event kind to request. "
+                      "See <a href=\"#JDWP_EventKind\">JDWP.EventKind</a> "
+		      "for a complete list of events that can be requested; "
+                      "some events may require a capability in order to be requested. "
+		      )
+            (byte suspendPolicy 
+                      "What threads are suspended when this event occurs?...")
+            (Repeat modifiers "Constraints used to control the number..."
+                (Select Modifier
+                    (byte modKind "Modifier kind")
+                    (Alt Count=1 "Limit the requested event to be reported at most once after a..."
+			                  (int count "Count before event. One for one-off."))
+                    (Alt Conditional=2 "Conditional on expression"
+                        (int exprID "For the future"))
+                    (Alt ThreadOnly=3 "Restricts reported events to..."
+                        (threadObject thread "Required thread"))
+                    (Alt ClassOnly=4 "For class prepare events, restricts the events..."
+                        (referenceType clazz "Required class"))
+                    (Alt ClassMatch=5 "Restricts reported events to those for classes whose name..."
+                        (string classPattern "Required class pattern...") )
+                    (Alt ClassExclude=6 "Restricts reported events to those for classes whose name..."
+                        (string classPattern "Disallowed class pattern..."))
+                    (Alt LocationOnly=7 "Restricts reported events to those that occur at..."
+                        (location loc "Required location"))
+                    (Alt ExceptionOnly=8 "Restricts reported exceptions by their class and..."
+                        (referenceType exceptionOrNull "Exception to report. Null (0) means report...")
+                        (boolean caught "Report caught exceptions")
+                        (boolean uncaught "Report uncaught exceptions..."))
+                    (Alt FieldOnly=9 "Restricts reported events to those that occur for..."
+                        (referenceType declaring "Type in which field is declared.")
+                        (field fieldID "Required field"))
+                    (Alt Step=10 "Restricts reported step events..."
+                        (threadObject thread "Thread in which to step")
+                        (int size "size of each step....")
+                        (int depth "relative call stack limit..."))
+                    (Alt InstanceOnly=11 "Restricts reported events to those whose..."
+                        (object instance "Required 'this' object"))
+                    (Alt SourceNameMatch=12 "Restricts reported class prepare events to those..."
+                        (string sourceNamePattern "Required source name pattern. "))
+                )
+            ) 
+        )
+        (Reply
+            (int requestID "ID of created request")
+        )
+        (ErrorSet
+            (Error INVALID_THREAD)
+            (Error INVALID_CLASS)
+            (Error INVALID_STRING)
+            (Error INVALID_OBJECT)
+            (Error INVALID_COUNT)
+            (Error INVALID_FIELDID)
+            (Error INVALID_METHODID)
+            (Error INVALID_LOCATION)
+            (Error INVALID_EVENT_TYPE)
+            (Error NOT_IMPLEMENTED)
+            (Error VM_DEAD)
+        )
+    )
+    (Command Clear=2
+        "Clear an event request. See <a href=\"#JDWP_EventKind\">JDWP.EventKind</a> "
+        (Out
+            (byte eventKind "Event kind to clear")
+            (int requestID "ID of request to clear"))
+        (Reply "none")
+        (ErrorSet
+            (Error VM_DEAD)
+            (Error INVALID_EVENT_TYPE)))
+    (Command ClearAllBreakpoints=3 "Removes all set breakpoints..."
+        (Out "none")
+        (Reply "none")
+        (ErrorSet
+            (Error VM_DEAD))))
+
+(CommandSet Event=64
+    (Command Composite=100 "Several events may occur at a given time in the target VM...."
+       (Event "Generated event"
+            (byte suspendPolicy "Which threads where suspended by this composite event?")
+            (Repeat events "Events in set."
+                (Select Events
+                    (byte eventKind "Event kind selector")
+                    (Alt VMStart=JDWP.EventKind.VM_START 
+			                  "Notification of initialization of a target VM.  This event is "
+                        (int requestID "Request that generated event (or 0 if this ")
+                        (threadObject thread "Initial thread")) 
+                    (Alt SingleStep=JDWP.EventKind.SINGLE_STEP
+                        "Notification of step completion in the target VM. The step event "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Stepped thread")
+                        (location location "Location stepped to")) 
+                    (Alt Breakpoint=JDWP.EventKind.BREAKPOINT
+                        "Notification of a breakpoint in the target VM. The breakpoint event "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Thread which hit breakpoint")
+                        (location location "Location hit")) 
+                    (Alt MethodEntry=JDWP.EventKind.METHOD_ENTRY
+                        "Notification of a method invocation in the target VM. This event "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Thread which entered method")
+                        (location location "The initial executable location in the method.")) 
+                    (Alt MethodExit=JDWP.EventKind.METHOD_EXIT
+                        "Notification of a method return in the target VM. This event "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Thread which exited method")
+                        (location location "Location of exit")) 
+                    (Alt MethodExitWithReturnValue=JDWP.EventKind.METHOD_EXIT_WITH_RETURN_VALUE
+                        "Notification of a method return in the target VM. This event "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Thread which exited method")
+                        (location location "Location of exit")
+                        (value value "Value that will be returned by the method"))
+                    (Alt MonitorContendedEnter=JDWP.EventKind.MONITOR_CONTENDED_ENTER		    
+                        "Notification that a thread in the target VM is attempting "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Thread which is trying to enter the monitor")
+                        (tagged-object object "Monitor object reference")
+                        (location location "Location of contended monitor enter"))
+                    (Alt MonitorContendedEntered=JDWP.EventKind.MONITOR_CONTENDED_ENTERED		    
+                        "Notification of a thread in the target VM is entering a monitor "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Thread which entered monitor")
+                        (tagged-object object "Monitor object reference")
+                        (location location "Location of contended monitor enter"))
+                    (Alt MonitorWait=JDWP.EventKind.MONITOR_WAIT		    
+                        "Notification of a thread about to wait on a monitor object. "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Thread which is about to wait")
+                        (tagged-object object "Monitor object reference")
+                        (location location "Location at which the wait will occur")
+                        (long     timeout  "Thread wait time in milliseconds"))
+                    (Alt MonitorWaited=JDWP.EventKind.MONITOR_WAITED		
+                        "Notification that a thread in the target VM has finished waiting on "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Thread which waited")
+                        (tagged-object object "Monitor object reference")
+                        (location location "Location at which the wait occured")
+                        (boolean  timed_out "True if timed out"))
+                    (Alt Exception=JDWP.EventKind.EXCEPTION
+                        "Notification of an exception in the target VM. "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Thread with exception")
+                        (location location "Location of exception throw...")
+                        (tagged-object exception "Thrown exception")
+                        (location catchLocation "Location of catch, or 0 if not caught. An exception...")) 
+                    (Alt ThreadStart=JDWP.EventKind.THREAD_START
+                        "Notification of a new running thread in the target VM. "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Started thread")) 
+                    (Alt ThreadDeath=JDWP.EventKind.THREAD_DEATH
+                        "Notification of a completed thread in the target VM. The "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Ending thread")
+                    ) 
+                    (Alt ClassPrepare=JDWP.EventKind.CLASS_PREPARE
+                        "Notification of a class prepare in the target VM. See the JVM "
+                        (int requestID "Request that generated event")
+                        (threadObject thread "Preparing thread....")
+                        (byte refTypeTag  "Kind of reference type. ")
+                        (referenceTypeID typeID "Type being prepared")
+                        (string signature "Type signature")
+                        (int status "Status of type. ")) 
+                )
+            )
+        )
+    )
+)
+
+(ConstantSet Error
+    (Constant NONE                   =0   "No error has occurred.")
+    (Constant VM_DEAD                =112 "The virtual machine is not running.")   
+)
+(ConstantSet Tag
+    (Constant ARRAY = '[' "'[' - an array object (objectID size). ")
+    (Constant BYTE = 'B' "'B' - a byte value (1 byte).")
+    (Constant CHAR = 'C' "'C' - a character value (2 bytes).")
+    (Constant OBJECT = 'L' "'L' - an object (objectID size).")
+    (Constant FLOAT = 'F' "'F' - a float value (4 bytes).")
+    (Constant DOUBLE = 'D' "'D' - a double value (8 bytes).")
+    (Constant INT = 'I' "'I' - an int value (4 bytes).")
+    (Constant LONG = 'J' "'J' - a long value (8 bytes).")
+    (Constant SHORT = 'S' "'S' - a short value (2 bytes).")
+    (Constant VOID = 'V' "'V' - a void value (no bytes).")
+    (Constant BOOLEAN = 'Z' "'Z' - a boolean value (1 byte).")
+    (Constant STRING = 's' "'s' - a String object (objectID size). ")
+    (Constant THREAD = 't' "'t' - a Thread object (objectID size). ")
+    (Constant THREAD_GROUP = 'g' 
+        "'g' - a ThreadGroup object (objectID size). ")
+    (Constant CLASS_LOADER = 'l' 
+        "'l' - a ClassLoader object (objectID size). ")
+    (Constant CLASS_OBJECT = 'c' 
+        "'c' - a class object object (objectID size). ")
+)
+(ConstantSet TypeTag
+    (Constant CLASS=1 "ReferenceType is a class. ")             
+    (Constant INTERFACE=2 "ReferenceType is an interface. ")             
+    (Constant ARRAY=3 "ReferenceType is an array. ")             
+)

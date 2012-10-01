@@ -1,8 +1,10 @@
-public class testprog {
+package com.alltheburritos.debug.test;
+
+public class TestProgram {
 
   private Nest n;
 
-  public testprog() {
+  public TestProgram() {
     n = new Nest();
   }
 
@@ -38,7 +40,7 @@ public class testprog {
   public String omg = "wtf";
 
   public static void main(String[] args) throws Exception {
-    new testprog().run();
+    new TestProgram().run();
   }
 
   private static int fib(int n) {

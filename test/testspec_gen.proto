@@ -1,0 +1,36 @@
+package jdwp;
+
+enum Error {
+  NONE = 0;
+  VM_DEAD = 112;
+}
+
+message VersionRequest {
+  // Intentionally empty
+}
+
+message VersionResponse {
+  required string description = 1;
+  required int32 jdwpMajor = 2;
+  required int32 jdwpMinor = 3;
+  required string vmVersion = 4;
+  required string vmName = 5;
+}
+
+message ClassesBySignatureRequest {
+  required string signature = 1;
+}
+
+message ClassesBySignatureResponse {
+  message ClassInfo {
+    required int32 refTypeTag = 1;
+    required int64 referenceTypeID = 2;
+    required int32 status = 3;
+  }
+  repeated ClassInfo classes = 1;
+}
+
+service VirtualMachine {
+  rpc Version (VersionRequest) returns (VersionResponse);
+  rpc ClassesBySignature (ClassesBySignatureRequest) returns (ClassesBySignatureResponse);
+}

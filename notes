@@ -1,0 +1,12 @@
+proto generation:
+
+for each CommandSet,
+  1) create a package
+  2) create a service
+  3) for each Command,
+    1) construct request and response message types, including generating nested message types for Groups
+  4) do something with error codes?
+  5) for each ConstantSet, build enum
+
+rpc service impl generation:
+
