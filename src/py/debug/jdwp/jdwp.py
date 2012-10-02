@@ -3,10 +3,10 @@ import struct
 import sys
 import traceback
 
+import old.old_jdwp
+
 class jdwp:
-
 	def __init__(self, port = 5005):
-
 		self.establish_connection(port)
 
 		# dict of req_id -> (cmd_set, cmd)
@@ -16,10 +16,14 @@ class jdwp:
 
 		# request ids are simply created sequentially starting with 0
 		self.next_req_id = 0
-		
-		self.vm_version = self.func_creator("VersionRequest", 1, 1, "", True)
 
-		print(self.vm_version(self, ()))
+		req_id = self.async_command(
+				"VirtualMachine_Version",
+				old.old_jdwp.cmd_specs["VirtualMachine_Version"][0],
+				old.old_jdwp.cmd_specs["VirtualMachine_Version"][1],
+				"")
+		print(req_id)
+		print(self.get_reply(req_id))
 
 
 	def establish_connection(self, port):
@@ -32,11 +36,6 @@ class jdwp:
 		if data != b'JDWP-Handshake':
 			raise Exception('Failed handshake')
 
-	def func_creator(self, name, cmdset, cmd, packing_str, sync=False):
-		if sync:
-			return lambda self, args=() : self.get_reply(self.async_command(name, cmdset, cmd, pack_jdi_data(packing_str, args)))
-		return lambda self, args=() : self.async_command(name, cmdset, cmd, pack_jdi_data(packing_str, args))
-
 	def async_command(self, name, cmd_set, cmd, data):
 		req_id = self.next_id()
 		self.requests[req_id] = name
@@ -48,7 +47,7 @@ class jdwp:
 			while req_id not in self.replies:
 				reply_id, flags, err, data = self.recv()
 				self.replies[reply_id] = (flags, err, data)
-		if self.requests[req_id] in cmd_specs:
+		if self.requests[req_id] in old.old_jdwp.cmd_specs:
 			key = self.requests[req_id]
 			_, err, data = self.replies[req_id]
 			if err != 0:
@@ -56,7 +55,7 @@ class jdwp:
 				traceback.print_tb(sys.exc_info()[2])
 				return []
 			# unpack_jdi_data returns (data, size). we just transfer the data part
-			return unpack_jdi_data(cmd_specs[key][3], data)[0]
+			return old.old_jdwp.unpack_jdi_data(old.old_jdwp.cmd_specs[key][3], data)[0]
 		return []
 
 	def pop_reply(self, req_id):
@@ -67,23 +66,19 @@ class jdwp:
 
 	def send(self, req_id, cmdset, cmd, data):
 		flags = 0
-		msg = bytearray()
 		length = 11 + len(data)
-		msg.extend(struct.pack('>IIBBB',
-			length, req_id, flags, cmdset, cmd))
-		msg.extend(data)
-		print("SEND header = %s, msg = %s" % (struct.unpack('>IIBBB', msg[0:11]), msg))
-		self.sock.send(msg)
+		header = struct.pack(">IIBBB", length, req_id, flags, cmdset, cmd)
+		self.sock.send(header)
+		self.sock.send(data)
 
 	def recv(self):
-		header = read_all(self.sock, 11)
+		header = jdwp.read_all(self.sock, 11)
 		length, req_id, flags, err = struct.unpack('>IIBH', header)
-		msgparts = []
 		remaining = length - 11
-		data = read_all(self.sock, remaining)
-		print("RECV header = %s, data = %s" % (struct.unpack('>IIBH', header), data))
+		data = jdwp.read_all(self.sock, remaining)
 		return req_id, flags, err, data
 
+	@staticmethod
 	def read_all(sock, num_bytes):
 		msgparts = []
 		remaining = num_bytes

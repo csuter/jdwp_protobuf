@@ -14,11 +14,10 @@ port = 10001
 channel = protobuf.socketrpc.channel.SocketRpcChannel(hostname,port)
 controller = channel.newController()
 
-request = jdwp_pb2.VirtualMachine_ClassesBySignature_Request()
-request.signature = "java.lang.String"
+request = jdwp_pb2.VirtualMachine_Version_Request()
 
 service  = jdwp_pb2.VirtualMachine_Stub(channel)
-service.VirtualMachine_ClassesBySignature(controller, request, Callback())
+service.VirtualMachine_Version(controller, request, Callback())
 
 if controller.failed():
-	print "Rpc failed %s : %s" % (controller.error(), controller.reason)
+	print "RPC ERROR(%s): %s" % (controller.reason, controller.error())
