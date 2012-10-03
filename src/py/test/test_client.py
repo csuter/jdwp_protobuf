@@ -10,14 +10,18 @@ class Callback:
 
 hostname = "localhost"
 port = 10001
-
 channel = protobuf.socketrpc.channel.SocketRpcChannel(hostname,port)
 controller = channel.newController()
 
-request = jdwp_pb2.VirtualMachine_Version_Request()
+service = jdwp_pb2.VirtualMachine_Stub(channel)
 
-service  = jdwp_pb2.VirtualMachine_Stub(channel)
-service.VirtualMachine_Version(controller, request, Callback())
+#request = jdwp_pb2.VirtualMachine_Version_Request()
+#service.VirtualMachine_Version(controller, request, Callback())
+#if controller.failed():
+#	print "RPC ERROR(%s): %s" % (controller.reason, controller.error())
 
+request = jdwp_pb2.VirtualMachine_ClassesBySignature_Request()
+request.signature = ""
+service.VirtualMachine_ClassesBySignature(controller, request, Callback())
 if controller.failed():
 	print "RPC ERROR(%s): %s" % (controller.reason, controller.error())

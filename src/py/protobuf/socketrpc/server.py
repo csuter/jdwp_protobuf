@@ -50,14 +50,14 @@ from protobuf.socketrpc.controller import SocketRpcController
 from protobuf.socketrpc import error
 
 
-class NullHandler(logging.Handler):
+class LogHandler(logging.Handler):
     '''A null logging handler to prevent clients that don't require the
     logging package from reporting no handlers found.'''
     def emit(self, record):
-        pass
+        print(record)
 
 log = logging.getLogger(__name__)
-log.addHandler(NullHandler())
+log.addHandler(LogHandler())
 
 
 class Callback():
@@ -196,6 +196,7 @@ class SocketHandler(SocketServer.StreamRequestHandler):
         try:
             service.CallMethod(method, controller, proto_request, callback)
         except Exception, e:
+            logging.exception(e)
             raise error.RpcError(unicode(e))
 
         # Return an RPC response, with payload defined in the callback

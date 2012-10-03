@@ -19,8 +19,7 @@ option py_generic_services = true;
 // can be disabled with the DisableCollection command, but it is not usually
 // necessary to do so.
 message ObjectID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: size of objectID plus one byte
@@ -39,8 +38,7 @@ message TaggedObjectID {
 // Description: Uniquely identifies an object in the target VM that is known to
 // be a thread
 message ThreadID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: same as objectID
@@ -48,8 +46,7 @@ message ThreadID {
 // Description: Uniquely identifies an object in the target VM that is known to
 // be a thread group
 message ThreadGroupID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: same as objectID
@@ -58,8 +55,7 @@ message ThreadGroupID {
 // be a string object. Note: this is very different from string, which is a
 // value.
 message StringID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: same as objectID
@@ -67,8 +63,7 @@ message StringID {
 // Description: Uniquely identifies an object in the target VM that is known to
 // be a class loader object
 message ClassLoaderID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: same as objectID
@@ -76,8 +71,7 @@ message ClassLoaderID {
 // Description: Uniquely identifies an object in the target VM that is known to
 // be a class object.
 message ClassObjectID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: same as objectID
@@ -85,8 +79,7 @@ message ClassObjectID {
 // Description: Uniquely identifies an object in the target VM that is known to
 // be an array.
 message ArrayID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: same as objectID
@@ -99,8 +92,7 @@ message ArrayID {
 // different reference type, regardless of whether the referenced class has been
 // unloaded.
 message ReferenceTypeID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: same as referenceTypeID
@@ -108,8 +100,7 @@ message ReferenceTypeID {
 // Description: Uniquely identifies a reference type in the target VM that is
 // known to be a class type.
 message ClassID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: same as referenceTypeID
@@ -117,8 +108,7 @@ message ClassID {
 // Description: Uniquely identifies a reference type in the target VM that is
 // known to be an interface type.
 message InterfaceID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: same as referenceTypeID
@@ -126,8 +116,7 @@ message InterfaceID {
 // Description: Uniquely identifies a reference type in the target VM that is
 // known to be an array type.
 message ArrayTypeID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: Target VM-specific, up to 8 bytes (see below)
@@ -139,8 +128,7 @@ message ArrayTypeID {
 // uniquely identify one method. The referenceTypeID can identify either the
 // declaring type of the method or a subtype.
 message MethodID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: Target VM-specific, up to 8 bytes (see below)
@@ -152,8 +140,7 @@ message MethodID {
 // identify one field. The referenceTypeID can identify either the declaring
 // type of the field or a subtype.
 message FieldID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: Target VM-specific, up to 8 bytes (see below)
@@ -163,8 +150,7 @@ message FieldID {
 // thread). The frameID need only be valid during the time its thread is
 // suspended.
 message FrameID {
- required int32 size = 1;
- required int64 value = 2;
+ required int64 value = 1;
 }
 
 // Size: Target VM specific

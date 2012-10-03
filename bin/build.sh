@@ -70,6 +70,6 @@ ps aux \
   | xargs -n1 -i sh -c 'if [[ -n "{}" ]]; then kill -9 {}; fi'
 
 log "Killing any swp files that got into gen/"
-find gen/ -name '.*.sw*' | xargs rm
+find gen/ -name '.*.sw*' | xargs rm -f
 
 log "Done!"
