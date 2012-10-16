@@ -1,13 +1,18 @@
+
+import collections
+import logging
 import socket
 import struct
 import sys
-import traceback
-import logging
 import time
+import traceback
 
+import google.protobuf.descriptor
 import jdwp_impl
 
-class jdwp:
+import threading
+
+class Jdwp:
 	def __init__(self, port = 5005):
 		self.establish_connection(port)
 		# dict of req_id -> (cmd_set, cmd)
@@ -17,9 +22,14 @@ class jdwp:
 		# request ids are simply created sequentially starting with 0
 		self.next_req_id = 0
 
+		# Initialize event listener
+		self.reader_thread_ = EventListenerThread()
+		self.reader_thread_.jdwp_ = self
+		self.reader_thread_.start()
+
 	def establish_connection(self, port):
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		retries = 3
+		retries = 5
 		while retries > 0:
 			retries -= 1
 			try:
@@ -36,7 +46,7 @@ class jdwp:
 			raise Exception('Failed handshake')
 
 	def call(self, name, cmd_set, cmd, data):
-		return self.get_reply(self.call_async(name, cmd_set, cmd, data))
+		return self.pop_reply(self.call_async(name, cmd_set, cmd, data))
 
 	def call_async(self, name, cmd_set, cmd, data):
 		req_id = self.next_id()
@@ -48,15 +58,13 @@ class jdwp:
 	def get_reply(self, req_id):
 		if req_id not in self.replies:
 			while req_id not in self.replies:
-				reply_id, flags, err, data = self.recv()
-				self.replies[reply_id] = (flags, err, data)
+				1
 		if self.requests[req_id] in jdwp_impl.COMMAND_SPECS:
 			key = self.requests[req_id]
 			_, err, data = self.replies[req_id]
 			if err != 0:
-				print("Error: " + str(err))
-				traceback.print_tb(sys.exc_info()[2])
-				return []
+				raise Exception("JDWP Error(%s=%d): \"%s\"" % (
+						ERROR_MESSAGES[err][0], err, ERROR_MESSAGES[err][1]))
 			return unpack_jdi_data(jdwp_impl.COMMAND_SPECS[key][3], data)[0]
 		return []
 
@@ -70,6 +78,8 @@ class jdwp:
 		flags = 0
 		length = 11 + len(data)
 		header = struct.pack(">IIBBB", length, req_id, flags, cmdset, cmd)
+		print("Sending length:%s, req_id:%s, flags:%s, cmdset:%s, cmd:%s, data:%s" %(
+				length, req_id, flags, cmdset, cmd, data))
 		self.sock.send(header)
 		self.sock.send(data)
 
@@ -196,7 +206,6 @@ def find_close_paren(string, start):
 
 
 def pack_jdi_data(fmt, data):
-	print("FMT: %s" % fmt)
 	result = bytearray()
 	pos = 0
 	in_paren = 0
@@ -210,32 +219,72 @@ def pack_jdi_data(fmt, data):
 				in_paren -= 1
 			idx += 1
 			continue
+		elif c == 'B':
+			# write string length
+			result.extend(struct.pack(">B", data[pos]))
+			pos += 1
+		elif c == 'b':
+			# write string length
+			result.extend(struct.pack(">B", data[pos]))
+			pos += 1
+		elif c == 'I':
+			# write string length
+			result.extend(struct.pack(">I", data[pos]))
+			pos += 1
+		elif c == 'L':
+			# write string length
+			result.extend(struct.pack(">Q", data[pos]))
+			pos += 1
+		elif c == 'S':
+			strlen = len(data[pos])
+			# write string length
+			result.extend(struct.pack(">I", strlen))
+			result.extend(bytearray(data[pos][0],"UTF-8"))
+			pos += 1
 		elif c == 'A':
 			raise Exception("IMPLEMENT ARRAY REGION PACKING")
 		elif c == '?':
-			type_tag, rest = data[pos]
+			type_tag, rest = data
 			type_tag_fmt = fmt[idx+1:idx+2]
-			result.extend(pack_jdi_data(type_tag_fmt, [type_tag]))
+			result.extend(pack_jdi_data(type_tag_fmt, type_tag))
 			sub_data_fmt = get_paren_substr_after(fmt, idx+1)
 			clauses = dict((int(k), v) for (k, v) in (x.split("=") for x in sub_data_fmt.split("|")))
-			result.extend(pack_jdi_data(clauses[type_tag], [rest]))
+			result.extend(pack_jdi_data(clauses[type_tag[0]], rest))
 			idx += 1
 			pos += 1
 		elif c == 'R':
 			num = len(data[pos])
 			result.extend(struct.pack(">I", num))
-			sub_result = []
+			sub_result = bytearray()
 			sub_data_fmt = get_paren_substr_after(fmt, idx)
 			for i in range(num):
-				sub_data = pack_jdi_data(sub_data_fmt, [data[pos][i]])
-				sub_result.append(sub_data)
+				sub_data = pack_jdi_data(sub_data_fmt, data[pos][i])
+				sub_result.extend(sub_data)
 			pos += 1
-			result.extend(b"".join(sub_result))
+			result.extend(sub_result)
 		elif c == '(':
 			in_paren = 1
+		else:
+			raise Exception("Unrecognized fmt char %s at idx %s in fmt \"%s\" for data \"%s\"" % (
+					c, idx, fmt, data))
 		idx += 1
 	return result
 
+def proto_to_data(proto):
+	fields = []
+	if hasattr(proto, '_fields'):
+		for field in proto._fields:
+			value = proto._fields[field]
+			print("field.name: %s, value: %s" % (field.name, value))
+			if field.label == 3:
+				data = [ proto_to_data(entry) for entry in value ]
+			else:
+				data = proto_to_data(value)
+			fields.append((field.number, data))
+		fields = [ entry[1] for entry in sorted(fields, key = lambda k:k[0]) ]
+	else:
+		fields = [ proto ]
+	return fields
 
 def get_paren_substr_after(fmt, idx):
 	if fmt[idx+1] != '(':
@@ -244,3 +293,18 @@ def get_paren_substr_after(fmt, idx):
 	if close_paren == -1:
 		raise Exception("jdi_data fmt exception: no matching ')' for paren at %d of '%s'" % (idx, fmt))
 	return fmt[idx+2:close_paren]
+
+class EventListenerThread(threading.Thread):
+
+	def run(self):
+		print("EventListenerThread active")
+		while True:
+			reply_id, flags, err, data = self.jdwp_.recv()
+			print("Received reply: %s" % [reply_id, flags, err, data])
+			self.jdwp_.replies[reply_id] = (flags, err, data)
+
+with open("data/errors", 'r') as f: ERROR_MESSAGE_LINES = [
+		line.strip().split("\t") for line in f.readlines() ]
+
+ERROR_MESSAGES = dict([ (int(line[0]), line[1:]) for line in ERROR_MESSAGE_LINES ])
+

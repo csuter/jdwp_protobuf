@@ -9,11 +9,12 @@ import jdwp_impl
 # Create and register the service
 # Note that this is an instantiation of the implementation class,
 # *not* the class defined in the proto file.
-jdwp = jdwp.jdwp()
+jdwp = jdwp.Jdwp()
 
-virtual_machine = jdwp_impl.VirtualMachineImpl(jdwp)
 server = protobuf.socketrpc.server.SocketRpcServer(10001)
-server.registerService(virtual_machine)
+server.registerService(jdwp_impl.VirtualMachineImpl(jdwp))
+server.registerService(jdwp_impl.EventRequestImpl(jdwp))
+server.registerService(jdwp_impl.EventImpl(jdwp))
 
 # Start the server
 print('Serving on port 10001')

@@ -1,0 +1,1272 @@
+(CommandSet VirtualMachine=1
+            (Command Version=1 
+                     (Out )
+                     (Reply 
+                       (string description )
+                       (int    jdwpMajor   )
+                       (int    jdwpMinor   )
+                       (string vmVersion   )
+                       (string vmName      ))
+                     (ErrorSet
+                       (Error VM_DEAD)   ))
+            (Command ClassesBySignature=2
+                     (Out
+                       (string signature ))
+                     (Reply 
+                       (Repeat classes  
+                               (Group ClassInfo
+                                      (byte refTypeTag  )
+                                      (referenceTypeID typeID )
+                                      (int status ))))
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command AllClasses=3
+                     (Out )
+                     (Reply 
+                       (Repeat classes  
+                               (Group ClassInfo
+                                      (byte refTypeTag  )
+                                      (referenceTypeID typeID )
+                                      (string signature )
+                                      (int status ))))
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command AllThreads=4
+                     (Out)
+                     (Reply
+                       (Repeat threads  
+                               (threadObject thread )))
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command TopLevelThreadGroups=5
+                     (Out)
+                     (Reply
+                       (Repeat groups  
+                               (threadGroupObject group )))
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command Dispose=6
+                     (Out)
+                     (Reply)
+                     (ErrorSet))
+            (Command IDSizes=7
+                     (Out)
+                     (Reply
+                       (int fieldIDSize )
+                       (int methodIDSize )
+                       (int objectIDSize )
+                       (int referenceTypeIDSize )
+                       (int frameIDSize ))
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command Suspend=8
+                     (Out)
+                     (Reply)
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command Resume=9
+                     (Out)
+                     (Reply)
+                     (ErrorSet))
+            (Command Exit=10
+                     (Out
+                       (int exitCode ))
+                     (Reply)
+                     (ErrorSet))
+            (Command CreateString=11
+                     (Out
+                       (string utf ))
+                     (Reply
+                       (stringObject stringObject ))
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command Capabilities=12
+                     (Out)
+                     (Reply
+                       (boolean canWatchFieldModification )
+                       (boolean canWatchFieldAccess )
+                       (boolean canGetBytecodes )
+                       (boolean canGetSyntheticAttribute )
+                       (boolean canGetOwnedMonitorInfo )
+                       (boolean canGetCurrentContendedMonitor )
+                       (boolean canGetMonitorInfo ))
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command ClassPaths=13
+                     (Out)
+                     (Reply
+                       (string baseDir )
+                       (Repeat classpaths 
+                               (string path ) )
+                       (Repeat bootclasspaths 
+                               (string path ) ))
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command DisposeObjects=14
+                     (Out
+                       (Repeat requests 
+                               (Group Request
+                                      (object object )
+                                      (int refCnt ))))
+                     (Reply)
+                     (ErrorSet))
+            (Command HoldEvents=15
+                     (Out)
+                     (Reply)
+                     (ErrorSet))
+            (Command ReleaseEvents=16
+                     (Out)
+                     (Reply)
+                     (ErrorSet))
+            (Command CapabilitiesNew=17
+                     (Out)
+                     (Reply
+                       (boolean canWatchFieldModification )
+                       (boolean canWatchFieldAccess )
+                       (boolean canGetBytecodes )
+                       (boolean canGetSyntheticAttribute )
+                       (boolean canGetOwnedMonitorInfo )
+                       (boolean canGetCurrentContendedMonitor )
+                       (boolean canGetMonitorInfo )
+                       (boolean canRedefineClasses )
+                       (boolean canAddMethod )
+                       (boolean canUnrestrictedlyRedefineClasses )
+                       (boolean canPopFrames)
+                       (boolean canUseInstanceFilters)
+                       (boolean canGetSourceDebugExtension)
+                       (boolean canRequestVMDeathEvent)
+                       (boolean canSetDefaultStratum)
+                       (boolean canGetInstanceInfo)
+                       (boolean canRequestMonitorEvents)
+                       (boolean canGetMonitorFrameInfo)
+                       (boolean canUseSourceNameFilters)
+                       (boolean canGetConstantPool)
+                       (boolean canForceEarlyReturn)
+                       (boolean reserved22)
+                       (boolean reserved23)
+                       (boolean reserved24)
+                       (boolean reserved25)
+                       (boolean reserved26)
+                       (boolean reserved27)
+                       (boolean reserved28)
+                       (boolean reserved29)
+                       (boolean reserved30)
+                       (boolean reserved31)
+                       (boolean reserved32))
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command RedefineClasses=18
+                     (Out 
+                       (Repeat classes  
+                               (Group ClassDef
+                                      (referenceType refType )
+                                      (Repeat classfile 
+                                              (byte classbyte )))))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_CLASS    )
+                       (Error INVALID_OBJECT   )
+                       (Error UNSUPPORTED_VERSION)
+                       (Error INVALID_CLASS_FORMAT)
+                       (Error CIRCULAR_CLASS_DEFINITION)
+                       (Error FAILS_VERIFICATION)
+                       (Error NAMES_DONT_MATCH)
+                       (Error NOT_IMPLEMENTED  )
+                       (Error ADD_METHOD_NOT_IMPLEMENTED)
+                       (Error SCHEMA_CHANGE_NOT_IMPLEMENTED)
+                       (Error HIERARCHY_CHANGE_NOT_IMPLEMENTED)
+                       (Error DELETE_METHOD_NOT_IMPLEMENTED)
+                       (Error CLASS_MODIFIERS_CHANGE_NOT_IMPLEMENTED)
+                       (Error METHOD_MODIFIERS_CHANGE_NOT_IMPLEMENTED)
+                       (Error VM_DEAD)))
+            (Command SetDefaultStratum=19
+                     (Out
+                       (string stratumID ))
+                     (Reply)
+                     (ErrorSet
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD)))
+            (Command AllClassesWithGeneric=20
+                     (Out )
+                     (Reply 
+                       (Repeat classes  
+                               (Group ClassInfo
+                                      (byte refTypeTag  )
+                                      (referenceTypeID typeID )
+                                      (string signature )
+                                      (string genericSignature )
+                                      (int status ))))
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command InstanceCounts=21
+                     (Out
+                       (Repeat refTypesCount 
+                               (referenceType refType )))
+                     (Reply
+                       (Repeat counts 
+                               (long instanceCount )))
+                     (ErrorSet
+                       (Error ILLEGAL_ARGUMENT   )
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD))))
+(CommandSet ReferenceType=2
+            (Command Signature=1
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (string signature ))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command ClassLoader=2
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (classLoaderObject classLoader ))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Modifiers=3
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (int modBits ))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Fields=4
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (Repeat declared 
+                               (Group FieldInfo
+                                      (field fieldID )
+                                      (string name )
+                                      (string signature )
+                                      (int modBits ))))
+                     (ErrorSet
+                       (Error CLASS_NOT_PREPARED)
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Methods=5
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (Repeat declared 
+                               (Group MethodInfo
+                                      (method methodID )
+                                      (string name )
+                                      (string signature )
+                                      (int modBits ))))
+                     (ErrorSet
+                       (Error CLASS_NOT_PREPARED)
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command GetValues=6
+                     (Out
+                       (referenceType refType )
+                       (Repeat fields 	    	    
+                               (Group Field
+                                      (field fieldID ))))
+                     (Reply
+                       (Repeat values 
+                               (value value )))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_FIELDID)
+                       (Error VM_DEAD)))
+            (Command SourceFile=7
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (string sourceFile ))
+                     (ErrorSet	    
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error ABSENT_INFORMATION	)	    
+                       (Error VM_DEAD)))
+            (Command NestedTypes=8
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (Repeat classes 
+                               (Group TypeInfo
+                                      (byte refTypeTag  )
+                                      (referenceTypeID typeID ))))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Status=9
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (int status ))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Interfaces=10
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (Repeat interfaces 
+                               (interfaceType interfaceType )))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command ClassObject=11
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (classObject classObject ))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command SourceDebugExtension=12
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (string extension ))
+                     (ErrorSet
+                       (Error INVALID_CLASS      )
+                       (Error INVALID_OBJECT     )
+                       (Error ABSENT_INFORMATION )
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD)))
+            (Command SignatureWithGeneric=13
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (string signature )
+                       (string genericSignature ))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command FieldsWithGeneric=14
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (Repeat declared 
+                               (Group FieldInfo
+                                      (field fieldID )
+                                      (string name )
+                                      (string signature )
+                                      (string genericSignature )
+                                      (int modBits ))))
+                     (ErrorSet
+                       (Error CLASS_NOT_PREPARED)
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command MethodsWithGeneric=15
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (Repeat declared 
+                               (Group MethodInfo
+                                      (method methodID )
+                                      (string name )
+                                      (string signature )
+                                      (string genericSignature )
+                                      (int modBits ))))
+                     (ErrorSet
+                       (Error CLASS_NOT_PREPARED)
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Instances=16
+                     (Out
+                       (referenceType refType )
+                       (int maxInstances ))       
+                     (Reply
+                       (Repeat instances 
+                               (tagged-object instance )))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error ILLEGAL_ARGUMENT  )
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD)))
+            (Command ClassFileVersion=17
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (int majorVersion )
+                       (int minorVersion )		)
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error ABSENT_INFORMATION )	    
+                       (Error VM_DEAD)))
+            (Command ConstantPool=18
+                     (Out
+                       (referenceType refType ))
+                     (Reply
+                       (int count )
+                       (Repeat bytes
+                               (byte cpbytes )))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error NOT_IMPLEMENTED   )
+                       (Error ABSENT_INFORMATION )	    
+                       (Error VM_DEAD))))
+(CommandSet ClassType=3
+            (Command Superclass=1
+                     (Out
+                       (classType clazz ))
+                     (Reply
+                       (classType superclass ))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command SetValues=2
+                     (Out
+                       (classType clazz )
+                       (Repeat values 
+                               (Group FieldValue 
+                                      (field fieldID )
+                                      (untagged-value value ))))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error CLASS_NOT_PREPARED)
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_FIELDID)
+                       (Error VM_DEAD)) )
+            (Command InvokeMethod=3
+                     (Out
+                       (classType clazz )
+                       (threadObject thread )
+                       (method methodID )
+                       (Repeat arguments 
+                               (value arg ))
+                       (int options ))
+                     (Reply
+                       (value returnValue )
+                       (tagged-object exception ))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_METHODID  )
+                       (Error INVALID_THREAD)
+                       (Error THREAD_NOT_SUSPENDED)
+                       (Error VM_DEAD)))
+            (Command NewInstance=4
+                     (Out
+                       (classType clazz )
+                       (threadObject thread )
+                       (method methodID )
+                       (Repeat arguments 
+                               (value arg ))
+                       (int options ))
+                     (Reply
+                       (tagged-object newObject )
+                       (tagged-object exception ))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_METHODID  )
+                       (Error INVALID_OBJECT)
+                       (Error INVALID_THREAD)
+                       (Error THREAD_NOT_SUSPENDED)
+                       (Error VM_DEAD))))
+(CommandSet ArrayType=4
+            (Command NewInstance=1
+                     (Out
+                       (arrayType arrType )
+                       (int length ))
+                     (Reply  
+                       (tagged-object newArray ))
+                     (ErrorSet
+                       (Error INVALID_ARRAY)
+                       (Error INVALID_OBJECT)
+                       (Error VM_DEAD))))
+(CommandSet InterfaceType=5)
+(CommandSet Method=6
+            (Command LineTable=1
+                     (Out
+                       (referenceType refType )
+                       (method methodID ))
+                     (Reply
+                       (long start )
+                       (long end )
+                       (Repeat lines 
+                               (Group LineInfo
+                                      (long lineCodeIndex )
+                                      (int lineNumber ))))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_METHODID  )
+                       (Error VM_DEAD)))
+            (Command VariableTable=2
+                     (Out
+                       (referenceType refType )
+                       (method methodID ))
+                     (Reply
+                       (int argCnt )
+                       (Repeat slots 
+                               (Group SlotInfo 
+                                      (long codeIndex)
+                                      (string name )
+                                      (string signature )
+                                      (int length )
+                                      (int slot ))))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_METHODID  )
+                       (Error ABSENT_INFORMATION )
+                       (Error VM_DEAD)))
+            (Command Bytecodes=3
+                     (Out
+                       (referenceType refType )
+                       (method methodID ))
+                     (Reply
+                       (Repeat bytes
+                               (byte bytecode )))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_METHODID  )
+                       (Error NOT_IMPLEMENTED   )
+                       (Error VM_DEAD)))
+            (Command IsObsolete=4
+                     (Out
+                       (referenceType refType )
+                       (method methodID ))
+                     (Reply
+                       (boolean isObsolete    ) )
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_METHODID  )
+                       (Error NOT_IMPLEMENTED   )
+                       (Error VM_DEAD)))
+            (Command VariableTableWithGeneric=5
+                     (Out
+                       (referenceType refType )
+                       (method methodID ))
+                     (Reply
+                       (int argCnt )
+                       (Repeat slots 
+                               (Group SlotInfo 
+                                      (long codeIndex)
+                                      (string name )
+                                      (string signature )
+                                      (string genericSignature )
+                                      (int length )
+                                      (int slot ))))
+                     (ErrorSet
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_METHODID  )
+                       (Error ABSENT_INFORMATION )
+                       (Error VM_DEAD)))) 
+(CommandSet Field=8)
+(CommandSet ObjectReference=9
+            (Command ReferenceType=1
+                     (Out
+                       (object object ))
+                     (Reply
+                       (byte refTypeTag  )
+                       (referenceTypeID typeID ))
+                     (ErrorSet
+                       (Error INVALID_OBJECT)
+                       (Error VM_DEAD)))
+            (Command GetValues=2
+                     (Out
+                       (object object )
+                       (Repeat fields 
+                               (Group Field
+                                      (field fieldID ))))
+                     (Reply
+                       (Repeat values 
+                               (value value )))
+                     (ErrorSet
+                       (Error INVALID_OBJECT)
+                       (Error INVALID_FIELDID)
+                       (Error VM_DEAD)))
+            (Command SetValues=3
+                     (Out
+                       (object object )
+                       (Repeat values 
+                               (Group FieldValue 
+                                      (field fieldID )
+                                      (untagged-value value ))))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_OBJECT)
+                       (Error INVALID_FIELDID)
+                       (Error VM_DEAD)) )
+            (Command MonitorInfo=5
+                     (Out
+                       (object object ))
+                     (Reply
+                       (threadObject owner )
+                       (int entryCount )
+                       (Repeat waiters 
+                               (threadObject thread )))
+                     (ErrorSet
+                       (Error INVALID_OBJECT)
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD)))
+            (Command InvokeMethod=6
+                     (Out
+                       (object object )
+                       (threadObject thread )
+                       (classType clazz )
+                       (method methodID )
+                       (Repeat arguments 
+                               (value arg ))
+                       (int options ))
+                     (Reply
+                       (value returnValue )
+                       (tagged-object exception ))
+                     (ErrorSet
+                       (Error INVALID_OBJECT)
+                       (Error INVALID_CLASS     )
+                       (Error INVALID_METHODID  )
+                       (Error INVALID_THREAD)
+                       (Error THREAD_NOT_SUSPENDED)
+                       (Error VM_DEAD)))
+            (Command DisableCollection=7
+                     (Out 
+                       (object object ))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_OBJECT)
+                       (Error VM_DEAD)))
+            (Command EnableCollection=8
+                     (Out 
+                       (object object ))
+                     (Reply )
+                     (ErrorSet
+                       (Error VM_DEAD)))
+            (Command IsCollected=9
+                     (Out
+                       (object object ))
+                     (Reply
+                       (boolean isCollected ))
+                     (ErrorSet
+                       (Error INVALID_OBJECT)
+                       (Error VM_DEAD)))
+            (Command ReferringObjects=10
+                     (Out
+                       (object object )
+                       (int maxReferrers ))       
+                     (Reply
+                       (Repeat referringObjects 
+                               (tagged-object instance )))
+                     (ErrorSet
+                       (Error INVALID_OBJECT    )
+                       (Error ILLEGAL_ARGUMENT  )
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD))))
+(CommandSet StringReference=10
+            (Command Value=1
+                     (Out
+                       (object stringObject ))
+                     (Reply
+                       (string stringValue ))
+                     (ErrorSet
+                       (Error INVALID_STRING)
+                       (Error INVALID_OBJECT)
+                       (Error VM_DEAD))))
+(CommandSet ThreadReference=11
+            (Command Name=1
+                     (Out
+                       (threadObject thread ))
+                     (Reply
+                       (string threadName ))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Suspend=2
+                     (Out
+                       (threadObject thread ))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Resume=3
+                     (Out
+                       (threadObject thread ))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Status=4
+                     (Out
+                       (threadObject thread ))
+                     (Reply 
+                       (int threadStatus )
+                       (int suspendStatus ))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command ThreadGroup=5
+                     (Out
+                       (threadObject thread ))
+                     (Reply
+                       (threadGroupObject group ))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Frames=6
+                     (Out
+                       (threadObject thread )
+                       (int startFrame )
+                       (int length ))
+                     (Reply
+                       (Repeat frames 
+                               (Group Frame
+                                      (frame frameID )
+                                      (location location ))))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command FrameCount=7
+                     (Out
+                       (threadObject thread ))
+                     (Reply
+                       (int frameCount ))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command OwnedMonitors=8
+                     (Out
+                       (threadObject thread ))
+                     (Reply
+                       (Repeat owned 
+                               (tagged-object monitor )))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD)))
+            (Command CurrentContendedMonitor=9
+                     (Out
+                       (threadObject thread ))
+                     (Reply
+                       (tagged-object monitor ))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD)))
+            (Command Stop=10
+                     (Out
+                       (threadObject thread )
+                       (object throwable ))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT )
+                       (Error VM_DEAD)))
+            (Command Interrupt=11
+                     (Out
+                       (threadObject thread ))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command SuspendCount=12
+                     (Out
+                       (threadObject thread ))
+                     (Reply 
+                       (int suspendCount ))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command OwnedMonitorsStackDepthInfo=13
+                     (Out
+                       (threadObject thread ))
+                     (Reply
+                       (Repeat owned 
+                               (Group monitor
+                                      (tagged-object monitor )
+                                      (int stack_depth ))))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD)))
+            (Command ForceEarlyReturn=14
+                     (Out
+                       (threadObject thread )
+                       (value value ))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error THREAD_NOT_SUSPENDED)
+                       (Error THREAD_NOT_ALIVE)
+                       (Error OPAQUE_FRAME      )
+                       (Error NO_MORE_FRAMES)
+                       (Error NOT_IMPLEMENTED)
+                       (Error TYPE_MISMATCH   )
+                       (Error VM_DEAD))))
+(CommandSet ThreadGroupReference=12
+            (Command Name=1
+                     (Out
+                       (threadGroupObject group ))
+                     (Reply
+                       (string groupName ))
+                     (ErrorSet
+                       (Error INVALID_THREAD_GROUP)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Parent=2
+                     (Out
+                       (threadGroupObject group ))
+                     (Reply
+                       (threadGroupObject parentGroup ))
+                     (ErrorSet
+                       (Error INVALID_THREAD_GROUP)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD)))
+            (Command Children=3
+                     (Out
+                       (threadGroupObject group ))
+                     (Reply
+                       (Repeat childThreads 
+                               (threadObject childThread ))
+                       (Repeat childGroups 
+                               (threadGroupObject childGroup )))
+                     (ErrorSet
+                       (Error INVALID_THREAD_GROUP)
+                       (Error INVALID_OBJECT    )
+                       (Error VM_DEAD))))
+(CommandSet ArrayReference=13
+            (Command Length=1
+                     (Out
+                       (arrayObject arrayObject ))
+                     (Reply
+                       (int arrayLength ))
+                     (ErrorSet
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_ARRAY)
+                       (Error VM_DEAD)))
+            (Command GetValues=2
+                     (Out
+                       (arrayObject arrayObject )
+                       (int firstIndex )
+                       (int length ))
+                     (Reply
+                       (typed-sequence values ))
+                     (ErrorSet
+                       (Error INVALID_LENGTH )
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_ARRAY)
+                       (Error VM_DEAD)))
+            (Command SetValues=3
+                     (Out
+                       (arrayObject arrayObject )
+                       (int firstIndex )
+                       (Repeat values 
+                               (untagged-value value )))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_LENGTH )
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_ARRAY)
+                       (Error VM_DEAD))))
+(CommandSet ClassLoaderReference=14
+            (Command VisibleClasses=1
+                     (Out
+                       (classLoaderObject classLoaderObject ))
+                     (Reply
+                       (Repeat classes 
+                               (Group ClassInfo
+                                      (byte refTypeTag  )
+                                      (referenceTypeID typeID  ))))
+                     (ErrorSet
+                       (Error INVALID_OBJECT)
+                       (Error INVALID_CLASS_LOADER)
+                       (Error VM_DEAD))))
+(CommandSet EventRequest=15
+            (Command Set=1
+                     (Out
+                       (byte eventKind )
+                       (byte suspendPolicy )
+                       (Repeat modifiers 
+                               (Select Modifier
+                                       (byte modKind )
+                                       (Alt Count=1 
+                                            (int count ))
+                                       (Alt Conditional=2 
+                                            (int exprID ))
+                                       (Alt ThreadOnly=3 
+                                            (threadObject thread ))
+                                       (Alt ClassOnly=4 
+                                            (referenceType clazz ))
+                                       (Alt ClassMatch=5 
+                                            (string classPattern ))
+                                       (Alt ClassExclude=6 
+                                            (string classPattern ))
+                                       (Alt LocationOnly=7 
+                                            (location loc ))
+                                       (Alt ExceptionOnly=8 
+                                            (referenceType exceptionOrNull )
+                                            (boolean caught )
+                                            (boolean uncaught ))
+                                       (Alt FieldOnly=9 
+                                            (referenceType declaring )
+                                            (field fieldID ))
+                                       (Alt Step=10 
+                                            (threadObject thread )
+                                            (int size )
+                                            (int depth ))
+                                       (Alt InstanceOnly=11
+                                            (object instance ))
+                                       (Alt SourceNameMatch=12
+                                            (string sourceNamePattern )))) )
+                     (Reply
+                       (int requestID ))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_CLASS)
+                       (Error INVALID_STRING)
+                       (Error INVALID_OBJECT)
+                       (Error INVALID_COUNT)
+                       (Error INVALID_FIELDID)
+                       (Error INVALID_METHODID)
+                       (Error INVALID_LOCATION)
+                       (Error INVALID_EVENT_TYPE)
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD)))
+            (Command Clear=2
+                     (Out
+                       (byte eventKind )
+                       (int requestID ))
+                     (Reply )
+                     (ErrorSet
+                       (Error VM_DEAD)
+                       (Error INVALID_EVENT_TYPE)))
+            (Command ClearAllBreakpoints=3
+                     (Out )
+                     (Reply )
+                     (ErrorSet
+                       (Error VM_DEAD))))
+(CommandSet StackFrame=16
+            (Command GetValues=1
+                     (Out
+                       (threadObject thread )
+                       (frame frame )
+                       (Repeat slots 
+                               (Group SlotInfo 
+                                      (int slot )
+                                      (byte sigbyte )))   )
+                     (Reply
+                       (Repeat values 
+                               (value slotValue )))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT)
+                       (Error INVALID_FRAMEID)
+                       (Error INVALID_SLOT)
+                       (Error VM_DEAD)))
+            (Command SetValues=2
+                     (Out
+                       (threadObject thread )
+                       (frame frame )
+                       (Repeat slotValues 
+                               (Group SlotInfo 
+                                      (int slot )
+                                      (value slotValue )))   )
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT)
+                       (Error INVALID_FRAMEID)
+                       (Error VM_DEAD)))
+            (Command ThisObject=3
+                     (Out
+                       (threadObject thread )
+                       (frame frame ))
+                     (Reply
+                       (tagged-object objectThis ))
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT)
+                       (Error INVALID_FRAMEID)
+                       (Error VM_DEAD)))
+            (Command PopFrames=4	
+                     (Out
+                       (threadObject thread )
+                       (frame frame ))
+                     (Reply )
+                     (ErrorSet
+                       (Error INVALID_THREAD)
+                       (Error INVALID_OBJECT    )
+                       (Error INVALID_FRAMEID)
+                       (Error THREAD_NOT_SUSPENDED)
+                       (Error NO_MORE_FRAMES)
+                       (Error INVALID_FRAMEID)
+                       (Error NOT_IMPLEMENTED)
+                       (Error VM_DEAD))))
+(CommandSet ClassObjectReference=17
+            (Command ReflectedType = 1
+                     (Out
+                       (classObject classObject ))
+                     (Reply
+                       (byte refTypeTag  )
+                       (referenceTypeID typeID ))
+                     (ErrorSet
+                       (Error INVALID_OBJECT)
+                       (Error VM_DEAD))))
+(CommandSet Event=64
+            (Command Composite=100
+                     (Event 
+                       (byte suspendPolicy )
+                       (Repeat events 
+                               (Select Events
+                                       (byte eventKind )
+                                       (Alt VMStart=JDWP.EventKind.VM_START 
+                                            (int requestID )
+                                            (threadObject thread )) 
+                                       (Alt SingleStep=JDWP.EventKind.SINGLE_STEP 
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (location location )) 
+                                       (Alt Breakpoint=JDWP.EventKind.BREAKPOINT
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (location location )) 
+                                       (Alt MethodEntry=JDWP.EventKind.METHOD_ENTRY
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (location location )) 
+                                       (Alt MethodExit=JDWP.EventKind.METHOD_EXIT
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (location location )) 
+                                       (Alt MethodExitWithReturnValue=JDWP.EventKind.METHOD_EXIT_WITH_RETURN_VALUE
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (location location )
+                                            (value value ))
+                                       (Alt MonitorContendedEnter=JDWP.EventKind.MONITOR_CONTENDED_ENTER		    
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (tagged-object object )
+                                            (location location ))
+                                       (Alt MonitorContendedEntered=JDWP.EventKind.MONITOR_CONTENDED_ENTERED		    
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (tagged-object object )
+                                            (location location ))
+                                       (Alt MonitorWait=JDWP.EventKind.MONITOR_WAIT		    
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (tagged-object object )
+                                            (location location )
+                                            (long     timeout  ))
+                                       (Alt MonitorWaited=JDWP.EventKind.MONITOR_WAITED		
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (tagged-object object )
+                                            (location location )
+                                            (boolean  timed_out ))
+                                       (Alt Exception=JDWP.EventKind.EXCEPTION
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (location location )
+                                            (tagged-object exception )
+                                            (location catchLocation )) 
+                                       (Alt ThreadStart=JDWP.EventKind.THREAD_START
+                                            (int requestID )
+                                            (threadObject thread )) 
+                                       (Alt ThreadDeath=JDWP.EventKind.THREAD_DEATH
+                                            (int requestID )
+                                            (threadObject thread )) 
+                                       (Alt ClassPrepare=JDWP.EventKind.CLASS_PREPARE
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (byte refTypeTag  )
+                                            (referenceTypeID typeID )
+                                            (string signature )
+                                            (int status )) 
+                                       (Alt ClassUnload=JDWP.EventKind.CLASS_UNLOAD
+                                            (int requestID )
+                                            (string signature ))
+                                       (Alt FieldAccess=JDWP.EventKind.FIELD_ACCESS
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (location location )
+                                            (byte refTypeTag  )
+                                            (referenceTypeID typeID )
+                                            (field fieldID )
+                                            (tagged-object object))
+                                       (Alt FieldModification=JDWP.EventKind.FIELD_MODIFICATION
+                                            (int requestID )
+                                            (threadObject thread )
+                                            (location location )
+                                            (byte refTypeTag  )
+                                            (referenceTypeID typeID )
+                                            (field fieldID )
+                                            (tagged-object object)
+                                            (value valueToBe ))
+                                       (Alt VMDeath=JDWP.EventKind.VM_DEATH		    
+                                            (int requestID )) )))))
+(ConstantSet Error
+             (Constant NONE                   =0   )
+             (Constant INVALID_THREAD         =10  )
+             (Constant INVALID_THREAD_GROUP   =11  )   
+             (Constant INVALID_PRIORITY       =12  )   
+             (Constant THREAD_NOT_SUSPENDED   =13  )   
+             (Constant THREAD_SUSPENDED       =14  )   
+             (Constant THREAD_NOT_ALIVE       =15  )   
+             (Constant INVALID_OBJECT         =20  )   
+             (Constant INVALID_CLASS          =21  )  
+             (Constant CLASS_NOT_PREPARED     =22  )   
+             (Constant INVALID_METHODID       =23  )   
+             (Constant INVALID_LOCATION       =24  )   
+             (Constant INVALID_FIELDID        =25  ) 
+             (Constant INVALID_FRAMEID        =30  )   
+             (Constant NO_MORE_FRAMES         =31  )   
+             (Constant OPAQUE_FRAME           =32  )  
+             (Constant NOT_CURRENT_FRAME      =33  )
+             (Constant TYPE_MISMATCH          =34  )   
+             (Constant INVALID_SLOT           =35  )  
+             (Constant DUPLICATE              =40  )   
+             (Constant NOT_FOUND              =41  )   
+             (Constant INVALID_MONITOR        =50  )   
+             (Constant NOT_MONITOR_OWNER      =51  )   
+             (Constant INTERRUPT              =52  )   
+             (Constant INVALID_CLASS_FORMAT   =60  )
+             (Constant CIRCULAR_CLASS_DEFINITION
+                       =61  )
+             (Constant FAILS_VERIFICATION     =62  )   
+             (Constant ADD_METHOD_NOT_IMPLEMENTED
+                       =63  )   
+             (Constant SCHEMA_CHANGE_NOT_IMPLEMENTED
+                       =64  )   
+             (Constant INVALID_TYPESTATE      =65  )   
+             (Constant HIERARCHY_CHANGE_NOT_IMPLEMENTED
+                       =66  )   
+             (Constant DELETE_METHOD_NOT_IMPLEMENTED
+                       =67  )   
+             (Constant UNSUPPORTED_VERSION    =68  )   
+             (Constant NAMES_DONT_MATCH       =69  )   
+             (Constant CLASS_MODIFIERS_CHANGE_NOT_IMPLEMENTED 
+                       =70  )   
+             (Constant METHOD_MODIFIERS_CHANGE_NOT_IMPLEMENTED
+                       =71  )   
+             (Constant NOT_IMPLEMENTED        =99  )
+             (Constant NULL_POINTER           =100 )   
+             (Constant ABSENT_INFORMATION     =101 )   
+             (Constant INVALID_EVENT_TYPE     =102 )   
+             (Constant ILLEGAL_ARGUMENT       =103 )   
+             (Constant OUT_OF_MEMORY          =110 )   
+             (Constant ACCESS_DENIED          =111 )   
+             (Constant VM_DEAD                =112 )   
+             (Constant INTERNAL               =113 )   
+             (Constant UNATTACHED_THREAD      =115 )   
+             (Constant INVALID_TAG            =500 )  
+             (Constant ALREADY_INVOKING       =502 )   
+             (Constant INVALID_INDEX          =503 )   
+             (Constant INVALID_LENGTH         =504 )   
+             (Constant INVALID_STRING         =506 )   
+             (Constant INVALID_CLASS_LOADER   =507 )   
+             (Constant INVALID_ARRAY          =508 )   
+             (Constant TRANSPORT_LOAD         =509 )   
+             (Constant TRANSPORT_INIT         =510 )
+             (Constant NATIVE_METHOD          =511  )
+             (Constant INVALID_COUNT          =512 )   )
+(ConstantSet EventKind
+             (Constant SINGLE_STEP            =1   )
+             (Constant BREAKPOINT             =2   )
+             (Constant FRAME_POP              =3   )
+             (Constant EXCEPTION              =4   )
+             (Constant USER_DEFINED           =5   )
+             (Constant THREAD_START           =6   )
+             (Constant THREAD_DEATH           =7   )
+             (Constant THREAD_END             =7   )
+             (Constant CLASS_PREPARE          =8   )
+             (Constant CLASS_UNLOAD           =9   )
+             (Constant CLASS_LOAD             =10  )
+             (Constant FIELD_ACCESS           =20  )
+             (Constant FIELD_MODIFICATION     =21  )
+             (Constant EXCEPTION_CATCH        =30  )
+             (Constant METHOD_ENTRY           =40  )
+             (Constant METHOD_EXIT            =41  )
+             (Constant METHOD_EXIT_WITH_RETURN_VALUE =42  )
+             (Constant MONITOR_CONTENDED_ENTER          =43  )
+             (Constant MONITOR_CONTENDED_ENTERED        =44 )
+             (Constant MONITOR_WAIT           =45 )
+             (Constant MONITOR_WAITED         =46 )
+             (Constant VM_START               =90  )
+             (Constant VM_INIT                =90  )
+             (Constant VM_DEATH               =99  )
+             (Constant VM_DISCONNECTED        =100 ))
+(ConstantSet ThreadStatus
+             (Constant ZOMBIE                 =0  )
+             (Constant RUNNING                =1  )
+             (Constant SLEEPING               =2  )
+             (Constant MONITOR                =3  )
+             (Constant WAIT                   =4  ))
+(ConstantSet SuspendStatus
+             (Constant SUSPEND_STATUS_SUSPENDED = 0x1 )             )
+(ConstantSet ClassStatus
+             (Constant VERIFIED               =1  )
+             (Constant PREPARED               =2  )
+             (Constant INITIALIZED            =4  )
+             (Constant ERROR                  =8  ))
+(ConstantSet TypeTag
+             (Constant CLASS=1 )             
+             (Constant INTERFACE=2 )             
+             (Constant ARRAY=3 )             )
+(ConstantSet Tag
+             (Constant ARRAY = '[' )
+             (Constant BYTE = 'B' )
+             (Constant CHAR = 'C' )
+             (Constant OBJECT = 'L' )
+             (Constant FLOAT = 'F' )
+             (Constant DOUBLE = 'D' )
+             (Constant INT = 'I' )
+             (Constant LONG = 'J' )
+             (Constant SHORT = 'S' )
+             (Constant VOID = 'V' )
+             (Constant BOOLEAN = 'Z' )
+             (Constant STRING = 's' )
+             (Constant THREAD = 't' )
+             (Constant THREAD_GROUP = 'g' )
+             (Constant CLASS_LOADER = 'l' )
+             (Constant CLASS_OBJECT = 'c' ))
+(ConstantSet StepDepth
+             (Constant INTO = 0 )
+             (Constant OVER = 1 )
+             (Constant OUT = 2 ))
+(ConstantSet StepSize
+             (Constant MIN = 0 )
+             (Constant LINE = 1 ))
+(ConstantSet SuspendPolicy
+             (Constant NONE = 0 )
+             (Constant EVENT_THREAD = 1 )
+             (Constant ALL = 2 ))
+(ConstantSet InvokeOptions
+             (Constant INVOKE_SINGLE_THREADED = 0x01)
+             (Constant INVOKE_NONVIRTUAL = 0x02))
